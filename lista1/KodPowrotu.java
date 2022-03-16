@@ -15,6 +15,7 @@ public class KodPowrotu {
     }
 
     public static void main(String[] args) {
+        // if none arguments where passed return 0
         if (args.length == 0) {
             System.exit(0);
         }
@@ -33,6 +34,10 @@ public class KodPowrotu {
                 .max(Map.Entry.comparingByValue())
                 .get()
                 .getKey();
+        // if none of the arguments where found return 0
+        if (counter.get(mostCommon) == 0) {
+            System.exit(0);
+        }
         System.exit(List.of(args).indexOf(mostCommon) + 1);
     }
 }
