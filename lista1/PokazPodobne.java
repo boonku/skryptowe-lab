@@ -13,11 +13,6 @@ public class PokazPodobne {
     }
 
     public static void display(Map<String, String> env, List<String> args) {
-        if (env.isEmpty()) {
-            for (String arg : args) {
-                System.out.printf("%s = %s%n", arg, NONE);
-            }
-        }
         Map<String, String> sortedEnv = new TreeMap<>(env);
         for (Map.Entry<String, String> var : sortedEnv.entrySet()) {
             String value = var.getValue();
@@ -34,12 +29,19 @@ public class PokazPodobne {
     }
 
     public static Map<String, String> filter(Map<String, String> env, List<String> args) {
-        return env.entrySet().stream()
+        Map<String, String> filteredEnv = env.entrySet().stream()
                 .filter(e -> args.stream()
                         .anyMatch(e.getKey()::contains))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue
                 ));
+        // put arg with value NONE if it wasn't found
+        for (String arg: args) {
+            if (filteredEnv.keySet().stream().noneMatch(key -> key.contains(arg))) {
+                filteredEnv.put(arg, NONE);
+            }
+        }
+        return filteredEnv;
     }
 }
