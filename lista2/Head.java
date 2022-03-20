@@ -11,7 +11,7 @@ public class Head {
                 .map(line -> Integer.valueOf(line.split("=")[1]));
     }
 
-    public static void checkParam(Optional<?> param) {
+    public static void exitIfParameterNotFound(Optional<?> param) {
         if (param.isEmpty()) {
             System.exit(0);
         }
@@ -51,7 +51,7 @@ public class Head {
         List<String> systemArgs = List.of(args);
         boolean showError = !systemArgs.contains("-e");
         Optional<Integer> numberOfLines = getNumberOfLines(systemArgs);
-        checkParam(numberOfLines);
+        exitIfParameterNotFound(numberOfLines);
         displayLines(getNLines(numberOfLines.get(), showError));
     }
 }

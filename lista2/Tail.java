@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Tail {
     public static Optional<Integer> getNumberOfLines(List<String> args) {
@@ -9,7 +8,7 @@ public class Tail {
                 .map(line -> Integer.valueOf(line.split("=")[1]));
     }
 
-    public static void checkParam(Optional<?> param) {
+    public static void exitIfParameterNotFound(Optional<?> param) {
         if (param.isEmpty()) {
             System.exit(0);
         }
@@ -48,7 +47,7 @@ public class Tail {
         List<String> systemArgs = List.of(args);
         boolean showError = !systemArgs.contains("-e");
         Optional<Integer> numberOfLines = getNumberOfLines(systemArgs);
-        checkParam(numberOfLines);
+        exitIfParameterNotFound(numberOfLines);
         displayLines(getNLines(numberOfLines.get(), showError));
     }
 }
