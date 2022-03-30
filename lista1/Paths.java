@@ -52,7 +52,7 @@ public class Paths {
     }
 
     public static void appendSize(StringBuilder stringBuilder, File file) {
-        stringBuilder.append(" ");
+        stringBuilder.append("\tbytes");
         long size = 0;
         if (file.isDirectory()) {
             try {
@@ -67,7 +67,7 @@ public class Paths {
         } else {
             size = file.length();
         }
-        stringBuilder.append(size).append(" B");
+        stringBuilder.append(size).append("\tbytes");
     }
 
     public static void sortFiles(List<File> files, int sortMode) {
