@@ -52,7 +52,7 @@ public class Paths {
     }
 
     public static void appendSize(StringBuilder stringBuilder, File file) {
-        stringBuilder.append("\tbytes");
+        stringBuilder.append("\t");
         long size = 0;
         if (file.isDirectory()) {
             try {
