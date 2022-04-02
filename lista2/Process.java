@@ -9,6 +9,9 @@ public class Process {
     public static final String SEPARATOR    = "separator";
     public static final String PROJECT      = "project";
     public static final String SELECT       = "select";
+    public static final String TRANSPOSITION= "transposition";
+    public static final String SELECT_COLUMN = "select-column";
+
 
     public static final String PROJECT_ARG_DELIMITER = ",";
     public static final String PROJECT_DELIMITER = "\t";
@@ -24,7 +27,7 @@ public class Process {
                 .orElse(null);
     }
 
-    public static int getIgnoreValue(String value) {
+    public static int getIntegerValue(String value) {
         int number = 0;
         try {
             number = Integer.parseInt(value);
@@ -39,6 +42,7 @@ public class Process {
         if (value != null) {
             values = Arrays.stream(value.split(PROJECT_ARG_DELIMITER))
                     .map(Integer::parseInt)
+                    .filter(n -> n > 0)
                     .collect(Collectors.toList());
         }
         return values;
@@ -62,6 +66,20 @@ public class Process {
                 .map(line -> line.substring(ignoreFirst, line.length() - ignoreLast))
                 .map(line -> line.replaceAll(delimiter, "\t"))
                 .filter(line -> line.contains(select))
+                .collect(Collectors.toList());
+    }
+
+    public static List<List<String>> getColumns(List<String> lines,
+                                                int ignoreFirst,
+                                                int ignoreLast,
+                                                String delimiter,
+                                                String select,
+                                                int selectColumn) {
+        return lines.stream()
+                .map(line -> line.substring(ignoreFirst, line.length() - ignoreLast))
+                .map(line -> line.replaceAll(delimiter, "\t"))
+                .map(line -> List.of(line.split(PROJECT_DELIMITER)))
+                .filter(line -> line.get(selectColumn - 1).contains(select))
                 .collect(Collectors.toList());
     }
 
@@ -91,11 +109,35 @@ public class Process {
         }
     }
 
+    public static void displayColumnsFromSelect(List<List<String>> lines, List<Integer> project, String separator) {
+        // if project arg is empty, get all columns
+        if (project.isEmpty()) {
+            for (int i = 0; i < lines.size(); i++) {
+                project.add(i + 1);
+            }
+        }
+        for (List<String> columns: lines) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Integer index: project) {
+                if (index - 1 < columns.size()) {
+                    stringBuilder.append(columns.get(index - 1));
+                    stringBuilder.append(separator);
+                }
+            }
+            if (stringBuilder.length() == 0) {
+                System.exit(1);
+            } else {
+                stringBuilder.setLength(stringBuilder.length() - separator.length());
+            }
+            System.out.println(stringBuilder);
+        }
+    }
+
     public static void main(String[] args) {
         List<String> systemArgs = List.of(args);
 
-        int ignoreFirst = getIgnoreValue(getValue(systemArgs, IGNORE_FIRST));
-        int ignoreLast = getIgnoreValue(getValue(systemArgs, IGNORE_LAST));
+        int ignoreFirst = getIntegerValue(getValue(systemArgs, IGNORE_FIRST));
+        int ignoreLast = getIntegerValue(getValue(systemArgs, IGNORE_LAST));
         String delimiter = getValue(systemArgs, DELIMITER);
         delimiter = delimiter == null ? DEFAULT_DELIMITER : delimiter;
         String separator = getValue(systemArgs, SEPARATOR);
@@ -103,12 +145,21 @@ public class Process {
         List<Integer> project = getProjectValues(getValue(systemArgs, PROJECT));
         String select = getValue(systemArgs, SELECT);
         select = select == null ? "" : select;
+        int selectColumn = getIntegerValue(getValue(systemArgs, SELECT_COLUMN));
 
         List<String> lines = readLines();
         ifEmptyExitWithCode(lines, 2);
-        lines = filterLines(lines, ignoreFirst, ignoreLast, delimiter, select);
-        ifEmptyExitWithCode(lines, 1);
-        displayColumns(lines, project, separator);
+        if (selectColumn != 0) {
+            List<List<String>> columns = getColumns(lines, ignoreFirst, ignoreLast, delimiter, select, selectColumn);
+            if (columns.isEmpty()) {
+                System.exit(1);
+            }
+            displayColumnsFromSelect(columns, project, separator);
+        } else {
+            lines = filterLines(lines, ignoreFirst, ignoreLast, delimiter, select);
+            ifEmptyExitWithCode(lines, 1);
+            displayColumns(lines, project, separator);
+        }
     }
 
     private static void ifEmptyExitWithCode(List<String> lines, int code) {
