@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Aggregate {
@@ -58,7 +56,8 @@ public class Aggregate {
             case "sum" -> result = sum(data);
             case "avg" -> result = average(data);
             case "count" -> result = count(data);
-            // add two more
+            case "median" -> result = median(data);
+            case "mode" -> result = mode(data);
         }
         if (result instanceof Double) {
             double d = (Double) result;
@@ -72,12 +71,23 @@ public class Aggregate {
         return result;
     }
 
+    private static Double mode(List<String> data) {
+        String mode =  data.stream()
+                    .collect(Collectors.groupingBy(Function.identity()
+                            , Collectors.counting()))
+                    .entrySet()
+                    .stream()
+                    .max(Map.Entry.comparingByValue()).orElse(null).getKey();
+        return Double.parseDouble(mode);
+    }
+
+
     private static Double min(List<String> data) {
-        return data.stream().mapToDouble(Double::parseDouble).min().getAsDouble();
+        return data.stream().mapToDouble(Double::parseDouble).min().orElseGet(() -> 0d);
     }
 
     private static Double max(List<String> data) {
-        return data.stream().mapToDouble(Double::parseDouble).max().getAsDouble();
+        return data.stream().mapToDouble(Double::parseDouble).max().orElseGet(() -> 0d);
     }
 
     private static Double sum(List<String> data) {
@@ -93,20 +103,38 @@ public class Aggregate {
         return data.size();
     }
 
+    private static Double median(List<String> data) {
+        List<Double> sortedData = data.stream().map(Double::parseDouble).sorted().toList();
+        int len = sortedData.size();
+        if (len % 2 != 0) {
+            return sortedData.get(len / 2);
+        } else {
+            return (sortedData.get(len / 2) + sortedData.get(len / 2 - 1)) / 2;
+        }
+    }
+
     public static void main(String[] args) {
         List<String> systemArgs = List.of(args);
         String function = getValue(systemArgs, ARG);
+        exitIfNoFunction(function);
         int columnNumber = getColumnNumber(getValue(systemArgs, COLUMN));
         List<String> lines = readLines();
-        if (lines.isEmpty()) {
-            System.exit(0);
-        }
+        ExitIfInputEmpty(lines);
         List<String> data = getColumn(lines, columnNumber);
+        Number result = aggregate(data, function);
+        System.out.print(result);
+    }
+
+    public static void exitIfNoFunction(String function) {
         if (function == null) {
             System.err.println("No aggregation function given!");
             System.exit(1);
         }
-        Number result = aggregate(data, function);
-        System.out.print(result);
+    }
+
+    public static void ExitIfInputEmpty(List<String> lines) {
+        if (lines.isEmpty()) {
+            System.exit(0);
+        }
     }
 }
