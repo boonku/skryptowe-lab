@@ -40,7 +40,7 @@ public class Aggregate {
     public static List<String> getColumn(List<String> lines, int column) {
         // if column index is out of bounds, return empty
         // change it to separate method which will stderr error(, and exit?)
-        if (column < 0 || column >= lines.get(0).split(COLUMN_DELIMITER).length) {
+        if (column < 0 || column > lines.get(0).split(COLUMN_DELIMITER).length) {
             return List.of();
         }
         return lines.stream()
@@ -98,12 +98,15 @@ public class Aggregate {
         String function = getValue(systemArgs, ARG);
         int columnNumber = getColumnNumber(getValue(systemArgs, COLUMN));
         List<String> lines = readLines();
+        if (lines.isEmpty()) {
+            System.exit(0);
+        }
         List<String> data = getColumn(lines, columnNumber);
         if (function == null) {
             System.err.println("No aggregation function given!");
             System.exit(1);
         }
         Number result = aggregate(data, function);
-        System.out.println("result: " + result);
+        System.out.print(result);
     }
 }
