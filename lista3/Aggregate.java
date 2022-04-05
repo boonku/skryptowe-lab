@@ -104,7 +104,7 @@ public class Aggregate {
     }
 
     private static Double median(List<String> data) {
-        List<Double> sortedData = data.stream().map(Double::parseDouble).sorted().toList();
+        List<Double> sortedData = data.stream().map(Double::parseDouble).sorted().collect(Collectors.toList());
         int len = sortedData.size();
         if (len % 2 != 0) {
             return sortedData.get(len / 2);
