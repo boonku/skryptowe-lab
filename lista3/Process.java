@@ -95,7 +95,7 @@ public class Process {
             StringBuilder stringBuilder = new StringBuilder();
             List<String> columns = List.of(line.split(PROJECT_DELIMITER));
             for (Integer index: project) {
-                if (index - 1 < columns.size()) {
+                if (index > 0 && index - 1 < columns.size()) {
                     stringBuilder.append(columns.get(index - 1));
                     stringBuilder.append(separator);
                 }
