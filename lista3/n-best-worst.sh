@@ -17,7 +17,12 @@ if [ ! -s tmp ]; then
 fi
 for i in {2019..2020}
 do
-    for j in {01..12}
+    if [ $i -eq 2019 ]; then
+        range=$(seq -w 12 12)
+    else
+        range=$(seq -w 01 12)
+    fi
+    for j in $range
     do
         echo -ne "$j\t$i\t" >> average
         s=$(java Process.java --select=.$j.$i < tmp | java Aggregate.java --func=avg --column=2)
