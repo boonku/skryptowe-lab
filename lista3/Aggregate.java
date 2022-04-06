@@ -5,7 +5,20 @@ import java.util.stream.Collectors;
 public class Aggregate {
     public static final String COLUMN   = "column";
     public static final String ARG      = "func";
+
     public static final String COLUMN_DELIMITER = "\t";
+
+    public static void main(String[] args) {
+        List<String> systemArgs = List.of(args);
+        String function = getValue(systemArgs, ARG);
+        exitIfNoFunction(function);
+        int columnNumber = getColumnNumber(getValue(systemArgs, COLUMN));
+        List<String> lines = readLines();
+        ExitIfInputEmpty(lines);
+        List<String> data = getColumn(lines, columnNumber);
+        Number result = aggregate(data, function);
+        System.out.print(result);
+    }
 
     public static String getValue(List<String> args, String argument) {
         return args.stream().
@@ -37,12 +50,10 @@ public class Aggregate {
 
     public static List<String> getColumn(List<String> lines, int column) {
         // if column index is out of bounds, return empty
-        // change it to separate method which will stderr error(, and exit?)
         if (column < 0 || column > lines.get(0).split(COLUMN_DELIMITER).length) {
             return List.of();
         }
         return lines.stream()
-//                .skip(1)
                 .map(line -> line.split(COLUMN_DELIMITER)[column - 1])
                 .collect(Collectors.toList());
     }
@@ -73,21 +84,22 @@ public class Aggregate {
 
     private static Double mode(List<String> data) {
         String mode =  data.stream()
-                    .collect(Collectors.groupingBy(Function.identity()
-                            , Collectors.counting()))
-                    .entrySet()
-                    .stream()
-                    .max(Map.Entry.comparingByValue()).orElse(null).getKey();
+                .collect(Collectors.groupingBy(Function.identity()
+                        , Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .orElseGet(() -> new AbstractMap.SimpleEntry<>("", 0L))
+                .getKey();
         return Double.parseDouble(mode);
     }
 
-
     private static Double min(List<String> data) {
-        return data.stream().mapToDouble(Double::parseDouble).min().orElseGet(() -> 0d);
+        return data.stream().mapToDouble(Double::parseDouble).min().orElse(0d);
     }
 
     private static Double max(List<String> data) {
-        return data.stream().mapToDouble(Double::parseDouble).max().orElseGet(() -> 0d);
+        return data.stream().mapToDouble(Double::parseDouble).max().orElse(0d);
     }
 
     private static Double sum(List<String> data) {
@@ -111,18 +123,6 @@ public class Aggregate {
         } else {
             return (sortedData.get(len / 2) + sortedData.get(len / 2 - 1)) / 2;
         }
-    }
-
-    public static void main(String[] args) {
-        List<String> systemArgs = List.of(args);
-        String function = getValue(systemArgs, ARG);
-        exitIfNoFunction(function);
-        int columnNumber = getColumnNumber(getValue(systemArgs, COLUMN));
-        List<String> lines = readLines();
-        ExitIfInputEmpty(lines);
-        List<String> data = getColumn(lines, columnNumber);
-        Number result = aggregate(data, function);
-        System.out.print(result);
     }
 
     public static void exitIfNoFunction(String function) {
