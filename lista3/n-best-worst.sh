@@ -15,13 +15,15 @@ if [ ! -s tmp ]; then
     echo "No records for that country"
     exit 1
 fi
-for i in {2019..2021}
+for i in {2019..2020}
 do
     for j in {01..12}
     do
         echo -ne "$j\t$i\t" >> average
         s=$(java Process.java --select=.$j.$i < tmp | java Aggregate.java --func=avg --column=2)
-        LC_NUMERIC="en_US.UTF-8" printf "%.2f" $s >> average
+        if [ ! -z $s ]; then
+            LC_NUMERIC="en_US.UTF-8" printf "%.2f" $s >> average
+        fi
         echo >> average
     done
 done
@@ -29,7 +31,7 @@ done
 rm -f tmp
 awk -F'\t' '$3 != ""' average > result
 rm -f average
-sort -gk3 result > tmp && mv tmp result
+sort -nk3 result > tmp && mv tmp result
 len=$(java Aggregate.java --func=count --column=3 < result)
 
 if [ $2 -gt $len ]; then
