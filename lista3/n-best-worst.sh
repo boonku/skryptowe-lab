@@ -4,6 +4,14 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+if [ $1 != "-best" ] && [ $1 != "-worst" ]; then
+    echo "Provide mode as first argument to display months: [-worst | -best]"
+    exit 1
+fi
+
+mode=$1
+shift
+
 re='^[0-9]+$'
 if ! [[ $2 =~ $re ]]; then
     echo "$2 is not a number"
@@ -44,10 +52,14 @@ if [ $2 -gt $len ]; then
     exit 1
 fi
 
-echo "$2 best months:"
-echo -e "month\tyear\taverage deaths"
-java Head.java --lines=$2 < result
-echo -e "\n$2 worst months:"
-echo -e "month\tyear\taverage deaths"
-java Tail.java --lines=$2 < result
+if [ $mode == "-best" ]; then
+    echo "$2 best months:"
+    echo -e "month\tyear\taverage deaths"
+    java Head.java --lines=$2 < result
+else
+    echo -e "\n$2 worst months:"
+    echo -e "month\tyear\taverage deaths"
+    java Tail.java --lines=$2 < result
+fi
+
 rm -f result
