@@ -3,9 +3,11 @@ from ViewerCreator import ViewerCreator
 def main():
     dir = 'media'
     viewer_creator = ViewerCreator()
-    image_viewer = viewer_creator.create_viewer(f'{dir}/pepe.jpg')
-    image_viewer.view()
+    for file in ['pepe.gif', 'pepe.jpg', 'pepe.png']:
+        image_viewer = viewer_creator.create_viewer(f'{dir}/{file}')
+        image_viewer.view()
     text_viewer = viewer_creator.create_viewer(f'{dir}/text_file.txt')
+    text_viewer.view()
     stats = text_viewer.get_data()
     print_stats(stats)
 
