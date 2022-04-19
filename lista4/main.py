@@ -1,4 +1,3 @@
-from typing import Text
 from TextViewer import TextViewer
 from ViewerCreator import ViewerCreator
 
