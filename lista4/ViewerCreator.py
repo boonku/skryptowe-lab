@@ -4,6 +4,7 @@ from ImageViewer import ImageViewer
 
 from TextViewer import TextViewer
 
+
 class ViewerCreator():
 
     def __init__(self):

@@ -1,6 +1,7 @@
 from FileViewer import FileViewer
 from PIL import Image
 
+
 class ImageViewer(FileViewer):
 
     def __init__(self, path):

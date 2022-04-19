@@ -8,4 +8,4 @@ class TextStats():
     def compute(self, text):
         self.number_of_lines = len(text.split('\n'))
         self.number_of_words = len(text.split())
-        self.number_of_nonalpha = len(''.join(ch for ch in text if not ch.isalnum()))
+        self.number_of_nonalpha = sum(1 for ch in text if not ch.isalpha())
