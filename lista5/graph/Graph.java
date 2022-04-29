@@ -68,7 +68,7 @@ public class Graph {
     }
 
     // returns vertex from graph based on its label
-    // can be more useful if more fields are added to vertex as equals
+    // can be more useful if more fields are added to vertex
     public Vertex getVertexFromLabel(String label) {
         return adjacencyList.keySet()
                 .stream()
