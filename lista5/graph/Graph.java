@@ -14,7 +14,7 @@ public class Graph {
 
     // adds vertex to graph if it doesn't exist
     public boolean addVertex(String label) {
-        Vertex vertex = getVertexFromLabel(label);
+        Vertex vertex = new Vertex(label);
         if (!checkIfVertexExists(vertex)) {
             adjacencyList.putIfAbsent(vertex, new ArrayList<>());
             return true;
@@ -75,5 +75,9 @@ public class Graph {
                 .filter(v -> v.getLabel().equals(label))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Map<Vertex, List<Edge>> getAdjacencyList() {
+        return adjacencyList;
     }
 }
