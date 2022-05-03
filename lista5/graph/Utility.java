@@ -3,6 +3,7 @@ package graph;
 import java.util.*;
 
 public class Utility {
+    // depth first search algorithm on given graph
     public static List<Vertex> DFS(Graph graph, String startingVertexLabel) {
         List<Vertex> vertices = new ArrayList<>();
         Vertex startingVertex = graph.getVertexFromLabel(startingVertexLabel);
@@ -27,6 +28,7 @@ public class Utility {
         return vertices;
     }
 
+    // breadth first search algorithm on given graph
     public static List<Vertex> BFS(Graph graph, String startingVertexLabel) {
         List<Vertex> vertices = new ArrayList<>();
         Vertex startingVertex = graph.getVertexFromLabel(startingVertexLabel);
