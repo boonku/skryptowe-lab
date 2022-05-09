@@ -1,9 +1,6 @@
 package graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Graph {
     private final Map<Vertex, List<Edge>> adjacencyList;
@@ -49,6 +46,13 @@ public class Graph {
         return true;
     }
 
+    // creates both vertices if needed and then edge between them
+    public boolean addEdgeWithVertices(String source, String destination, int weight) {
+        addVertex(source);
+        addVertex(destination);
+        return addEdge(source, destination, weight);
+    }
+
     // removes the edge between two vertices if both of them and the edge exist
     public boolean removeEdge(String source, String destination) {
         Vertex sourceVertex = getVertexFromLabel(source);
@@ -87,7 +91,7 @@ public class Graph {
 
     // returns vertex with given label from graph
     // can be more useful if more fields are added to vertex, e.g. generic value
-    public Vertex getVertexFromLabel(String label) {
+    private Vertex getVertexFromLabel(String label) {
         return adjacencyList.keySet()
                 .stream()
                 .filter(v -> v.getLabel().equals(label))
@@ -95,7 +99,51 @@ public class Graph {
                 .orElse(null);
     }
 
-    public Map<Vertex, List<Edge>> getAdjacencyList() {
-        return adjacencyList;
+    // depth first search algorithm
+    public List<Vertex> DFS(String startingVertexLabel) {
+        List<Vertex> vertices = new ArrayList<>();
+        Vertex startingVertex = getVertexFromLabel(startingVertexLabel);
+        if (startingVertex == null) {
+            return vertices;
+        }
+        Deque<Vertex> stack = new ArrayDeque<>();
+        Set<Vertex> visited = new HashSet<>();
+        stack.add(startingVertex);
+        while (!stack.isEmpty()) {
+            Vertex vertex = stack.pop();
+            List<Edge> edges = adjacencyList.getOrDefault(vertex, List.of());
+            if (!visited.contains(vertex)) {
+                vertices.add(vertex);
+                visited.add(vertex);
+                for (Edge edge: edges) {
+                    stack.push(edge.getDestination());
+                }
+            }
+        }
+        return vertices;
+    }
+
+    // breadth first search algorithm
+    public List<Vertex> BFS(String startingVertexLabel) {
+        List<Vertex> vertices = new ArrayList<>();
+        Vertex startingVertex = getVertexFromLabel(startingVertexLabel);
+        if (startingVertex == null) {
+            return vertices;
+        }
+        Queue<Vertex> queue = new LinkedList<>();
+        Set<Vertex> visited = new HashSet<>();
+        queue.add(startingVertex);
+        while (!queue.isEmpty()) {
+            Vertex vertex = queue.poll();
+            List<Edge> edges = adjacencyList.getOrDefault(vertex, List.of());
+            if (!visited.contains(vertex)) {
+                vertices.add(vertex);
+                visited.add(vertex);
+                for (Edge edge: edges) {
+                    queue.add(edge.getDestination());
+                }
+            }
+        }
+        return vertices;
     }
 }
