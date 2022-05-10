@@ -146,4 +146,11 @@ public class Graph {
         }
         return vertices;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        adjacencyList.forEach((key, value) -> stringBuilder.append(key).append(": ").append(value).append("\n"));
+        return stringBuilder.toString();
+    }
 }
